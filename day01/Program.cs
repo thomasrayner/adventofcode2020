@@ -48,7 +48,7 @@ namespace day01
                     {
                         if (input[i] + input[j] + input[k] == 2020)
                         {
-                            Console.WriteLine($"Pt 1: {input[i] * input[j] * input[k]}");
+                            Console.WriteLine($"Pt 2: {input[i] * input[j] * input[k]}");
                             found = true;
                             break;
                         }
