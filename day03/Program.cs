@@ -20,17 +20,8 @@ namespace day03
 
             // pt1
 
-            int width = input[0].Length;
-            int height = input.Count;
-            int[] slope = new int[] {3, 1}; // from question
-            int x = 0;
-            int treeCount = 0;
-
-            for (int y = 0; y < height; y += slope[1])
-            {
-                if (input[y][x] == '#') treeCount++;
-                x = (x + slope[0]) % width;
-            }
+            int[] slope = new int[] { 3, 1 }; // from question
+            long treeCount = Ski(input, slope);
 
             Console.WriteLine($"Pt1: {treeCount}");
 
@@ -41,24 +32,28 @@ namespace day03
                 slope,
                 new int[] {5, 1},
                 new int[] {7, 1},
-                new int[] {1, 2}};
-            List<Int64> treeCounts = new List<Int64>();
+                new int[] {1, 2}}; // from question
+            List<long> treeCounts = new List<long>();
 
-            foreach (int[] s in slopes)
+            slopes.ForEach(i => treeCounts.Add(Ski(input, i)));
+            long treeCount2 = treeCounts.Aggregate((a, x) => a * x);
+            Console.WriteLine($"Pt2: {treeCount2}");
+        }
+
+        static long Ski(List<string> Course, int[] slope)
+        {
+            int width = Course[0].Length;
+            int height = Course.Count;
+            int x = 0;
+            int treeCount = 0;
+
+            for (int y = 0; y < height; y += slope[1])
             {
-                int tempCount = 0;
-                x = 0;
-                for (int y = 0; y < height; y += s[1])
-                {
-                    if (input[y][x] == '#') tempCount++;
-                    x = (x + s[0]) % width;
-                }
-                treeCounts.Add(tempCount);
+                if (Course[y][x] == '#') treeCount++;
+                x = (x + slope[0]) % width;
             }
 
-            Console.WriteLine($"Pt2: {(Int64)(treeCounts.Aggregate((a, x) => a * x))}");
-
-            // ran out of time to optimize
+            return treeCount;
         }
     }
 }
