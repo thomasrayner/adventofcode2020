@@ -165,10 +165,10 @@ namespace day04
                         {
                             string measure = val.ToString()[^2..];
                             int[] limits = new int[2];
+                            int h = Convert.ToInt32(val.ToString()[0..^2]);
+
                             if (measure == "cm") limits = new int[] { 150, 193 };
                             if (measure == "in") limits = new int[] { 59, 76 };
-
-                            int h = Convert.ToInt32(val.ToString()[0..^2]);
                             if (h <= limits[1] && h >= limits[0]) break;
                         }
                         return false;
@@ -182,7 +182,11 @@ namespace day04
                         return false;
                     case "pid":
                     // passport ID must be exactly 9 digits
-                        if (Regex.Match(val.ToString(), @"\d{9}").Success && val.ToString().Length == 9) break;
+                        if (Regex.Match(val.ToString(), @"\d{9}").Success &&
+                            val.ToString().Length == 9) 
+                            {
+                                break;
+                            }
                         return false;
                     case "cid":
                     // country ID purposefully ignored
