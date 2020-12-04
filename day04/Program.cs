@@ -13,67 +13,34 @@ namespace day04
         {
             string inputPath = args[0];
             StreamReader inputFile = new StreamReader(inputPath);
-            List<Passport> input = new List<Passport>();
             string line;
             List<string> lines = new List<string>();
-
-            // pt 1
-
-            while (true)
-            {
-                line = inputFile.ReadLine();
-
-                if (line == string.Empty)
-                {
-                    Passport pass = new Passport(lines);
-                    if (pass.ValidatePassport1()) input.Add(pass);
-                    lines.Clear();
-                    continue;
-                }
-
-                if (line == null && lines.Count > 0)
-                {
-                    Passport pass = new Passport(lines);
-                    if (pass.ValidatePassport1()) input.Add(pass);
-                    break;
-                }
-
-                if (line == null) break;
-
-                lines.Add(line);
-            }
-
-            Console.WriteLine($"Pt1: {input.Count}");
-
-            inputFile.BaseStream.Position = 0;
-            lines.Clear();
-            input.Clear();
+            List<Passport> passports1 = new List<Passport>();
+            List<Passport> passports2 = new List<Passport>();
 
             while (true)
             {
                 line = inputFile.ReadLine();
 
-                if (line == string.Empty)
+                if (string.IsNullOrEmpty(line))
                 {
-                    Passport pass = new Passport(lines);
-                    if (pass.ValidatePassport2()) input.Add(pass);
-                    lines.Clear();
-                    continue;
-                }
+                    if (lines.Count > 0)
+                    {
+                        Passport pass = new Passport(lines);
+                        if (pass.ValidatePassport1()) passports1.Add(pass);
+                        if (pass.ValidatePassport2()) passports2.Add(pass);
+                        lines.Clear();
+                        continue;
+                    }
 
-                if (line == null && lines.Count > 0)
-                {
-                    Passport pass = new Passport(lines);
-                    if (pass.ValidatePassport2()) input.Add(pass);
                     break;
                 }
-
-                if (line == null) break;
 
                 lines.Add(line);
             }
 
-            Console.WriteLine($"Pt2: {input.Count}");
+            Console.WriteLine($"Pt1: {passports1.Count}");
+            Console.WriteLine($"Pt2: {passports2.Count}");
         }
     }
 
@@ -142,15 +109,8 @@ namespace day04
                 if (propertyInfo.Name == "cid") continue;
 
                 // pt 1 just wants them all to have a value except cid
-                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.GetValue(this) == null)
-                {
-                    return false;
-                }
-
-                if (propertyInfo.PropertyType == typeof(int) && (int)propertyInfo.GetValue(this) == 0)
-                {
-                    return false;
-                }
+                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.GetValue(this) == null) return false;
+                if (propertyInfo.PropertyType == typeof(int) && (int)propertyInfo.GetValue(this) == 0) return false;
             }
 
             return true;
@@ -162,23 +122,17 @@ namespace day04
             {
                 if (propertyInfo.Name == "cid") continue;
 
-                // pt 1 just wants them all to have a value except cid
-                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.GetValue(this) == null)
-                {
-                    return false;
-                }
+                var val = propertyInfo.GetValue(this);
 
-                if (propertyInfo.PropertyType == typeof(int) && (int)propertyInfo.GetValue(this) == 0)
-                {
-                    return false;
-                }
+                // pt 1 just wants them all to have a value except cid
+                if (propertyInfo.PropertyType == typeof(string) && val == null) return false;
+                if (propertyInfo.PropertyType == typeof(int) && (int)val == 0) return false;
 
                 // pt 2 has stricter rules
-
-                var val = propertyInfo.GetValue(this);
                 switch (propertyInfo.Name)
                 {
                     case "byr":
+                    // birth year must be 4 digits, between 1920 and 2002
                         if (Regex.Match(val.ToString(), @"\d{4}").Success &&
                             (int)val >= 1920 &&
                             (int)val <= 2002)
@@ -187,6 +141,7 @@ namespace day04
                         }
                         return false;
                     case "iyr":
+                    // issued year must be 4 digits, between 2010 and 2020
                         if (Regex.Match(val.ToString(), @"\d{4}").Success &&
                             (int)val >= 2010 &&
                             (int)val <= 2020)
@@ -195,6 +150,7 @@ namespace day04
                         }
                         return false;
                     case "eyr":
+                        // expiry year must be 4 digits, between 2020 and 2030
                         if (Regex.Match(val.ToString(), @"\d{4}").Success &&
                             (int)val >= 2020 &&
                             (int)val <= 2030)
@@ -203,6 +159,9 @@ namespace day04
                         }
                         return false;
                     case "hgt":
+                    // height must be a number followed by "cm" or "in"
+                    // if "in", must be between 59 and 76
+                    // if "cm", must be between 150 and 193
                         if (Regex.Match(val.ToString(), @"\d+(cm|in)").Success)
                         {
                             string measure = val.ToString()[^2..];
@@ -215,14 +174,20 @@ namespace day04
                         }
                         return false;
                     case "hcl":
+                    // hair color must start with "#" and then be "6 numbers or letters a-f"
                         if (Regex.Match(val.ToString(), @"#[\da-fA-F]{6}").Success) break;
                         return false;
                     case "ecl":
+                    // eye color must be one of several valid values
                         if (_validEcl.Contains(val.ToString())) break;
                         return false;
                     case "pid":
+                    // passport ID must be exactly 9 digits
                         if (Regex.Match(val.ToString(), @"\d{9}").Success && val.ToString().Length == 9) break;
                         return false;
+                    case "cid":
+                    // country ID purposefully ignored
+                        break;
                 }
             }
 
