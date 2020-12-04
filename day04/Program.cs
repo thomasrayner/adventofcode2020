@@ -17,6 +17,8 @@ namespace day04
             string line;
             List<string> lines = new List<string>();
 
+            // pt 1
+
             while (true)
             {
                 line = inputFile.ReadLine();
@@ -24,7 +26,7 @@ namespace day04
                 if (line == string.Empty)
                 {
                     Passport pass = new Passport(lines);
-                    if (pass.ValidatePassport()) input.Add(pass);
+                    if (pass.ValidatePassport1()) input.Add(pass);
                     lines.Clear();
                     continue;
                 }
@@ -32,7 +34,37 @@ namespace day04
                 if (line == null && lines.Count > 0)
                 {
                     Passport pass = new Passport(lines);
-                    if (pass.ValidatePassport()) input.Add(pass);
+                    if (pass.ValidatePassport1()) input.Add(pass);
+                    break;
+                }
+
+                if (line == null) break;
+
+                lines.Add(line);
+            }
+
+            Console.WriteLine($"Pt1: {input.Count}");
+
+            inputFile.BaseStream.Position = 0;
+            lines.Clear();
+            input.Clear();
+
+            while (true)
+            {
+                line = inputFile.ReadLine();
+
+                if (line == string.Empty)
+                {
+                    Passport pass = new Passport(lines);
+                    if (pass.ValidatePassport2()) input.Add(pass);
+                    lines.Clear();
+                    continue;
+                }
+
+                if (line == null && lines.Count > 0)
+                {
+                    Passport pass = new Passport(lines);
+                    if (pass.ValidatePassport2()) input.Add(pass);
                     break;
                 }
 
@@ -103,7 +135,28 @@ namespace day04
                 }
             }
         }
-        public bool ValidatePassport()
+        public bool ValidatePassport1()
+        {
+            foreach (PropertyInfo propertyInfo in this.GetType().GetProperties())
+            {
+                if (propertyInfo.Name == "cid") continue;
+
+                // pt 1 just wants them all to have a value except cid
+                if (propertyInfo.PropertyType == typeof(string) && propertyInfo.GetValue(this) == null)
+                {
+                    return false;
+                }
+
+                if (propertyInfo.PropertyType == typeof(int) && (int)propertyInfo.GetValue(this) == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool ValidatePassport2()
         {
             foreach (PropertyInfo propertyInfo in this.GetType().GetProperties())
             {
@@ -154,9 +207,9 @@ namespace day04
                         {
                             string measure = val.ToString()[^2..];
                             int[] limits = new int[2];
-                            if (measure == "cm") limits = new int[] {150, 193};
-                            if (measure == "in") limits = new int[] {59, 76};
-                            
+                            if (measure == "cm") limits = new int[] { 150, 193 };
+                            if (measure == "in") limits = new int[] { 59, 76 };
+
                             int h = Convert.ToInt32(val.ToString()[0..^2]);
                             if (h <= limits[1] && h >= limits[0]) break;
                         }
