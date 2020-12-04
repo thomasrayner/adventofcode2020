@@ -13,14 +13,13 @@ namespace day04
         {
             string inputPath = args[0];
             StreamReader inputFile = new StreamReader(inputPath);
-            string line;
             List<string> lines = new List<string>();
             List<Passport> passports1 = new List<Passport>();
             List<Passport> passports2 = new List<Passport>();
 
             while (true)
             {
-                line = inputFile.ReadLine();
+                string line = inputFile.ReadLine();
 
                 if (string.IsNullOrEmpty(line))
                 {
