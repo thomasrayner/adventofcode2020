@@ -47,30 +47,25 @@ namespace day09
                 }
             }
 
-            bool foundPt2 = false;
             for (int i = 0; i < input.Count; i++)
             {
                 MapOb map = new MapOb(input[i], input[i], input[i]);
 
-                while (!foundPt2 && map.Sum < pt2Target)
+                for (int j = i + 1; j < input.Count; j++)
                 {
-                    for (int j = i + 1; j < input.Count; j++)
-                    {
-                        // keep adding numbers to the running sum starting at input[i] until we either
-                        // hit the target we're looking for, or exceed it
-                        map.Sum += input[j];
-                        map.Min = Math.Min(map.Min, input[j]);
-                        map.Max = Math.Max(map.Max, input[j]);
+                    // keep adding numbers to the running sum starting at input[i] until we either
+                    // hit the target we're looking for, or exceed it
+                    map.Sum += input[j];
+                    map.Min = Math.Min(map.Min, input[j]);
+                    map.Max = Math.Max(map.Max, input[j]);
 
-                        if (map.Sum == pt2Target)
-                        {
-                            Console.WriteLine($"Pt2: {map.Min + map.Max}");
-                            foundPt2 = true;
-                            break;
-                        }
-                        
-                        else if (map.Sum > pt2Target) break;
+                    if (map.Sum == pt2Target)
+                    {
+                        Console.WriteLine($"Pt2: {map.Min + map.Max}");
+                        break;
                     }
+
+                    else if (map.Sum > pt2Target) break;
                 }
             }
         }
